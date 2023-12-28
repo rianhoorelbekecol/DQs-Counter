@@ -892,23 +892,26 @@ var FlipClock;
 		 * Sets the clock time
 		 */
 		 
-		setTime: function() {
-			var time = 0;
+		setTime: function(timeInSeconds) {
+			// Validate that the provided time is a non-negative number
+			if (typeof timeInSeconds !== 'number' || timeInSeconds < 0) {
+				throw new Error('Invalid time value. Please provide a non-negative number.');
+			}
 		
 			// Calculate the days, hours, minutes, and seconds
-			var days = Math.floor(time / (24 * 60 * 60));
-			var hours = Math.floor((time % (24 * 60 * 60)) / 3600);
-			var minutes = Math.floor((time % 3600) / 60);
-			var seconds = time % 60;
+			var days = Math.floor(timeInSeconds / (24 * 60 * 60));
+			var hours = Math.floor((timeInSeconds % (24 * 60 * 60)) / 3600);
+			var minutes = Math.floor((timeInSeconds % 3600) / 60);
+			var seconds = timeInSeconds % 60;
 		
 			// Update the FlipClock time
-			this.time.time = time;
+			this.time.time = timeInSeconds;
 			this.time.days = days;
 			this.time.hours = hours;
 			this.time.minutes = minutes;
 			this.time.seconds = seconds;
 		
-			this.flip(true);        
+			this.flip(true);
 		},
 		
 		/**

@@ -60,25 +60,28 @@
         $(document).ready(function(){
             // Function to get the saved time from localStorage
             function getSavedTime() {
-                return localStorage.getItem('savedTime') || 0;
+                return parseInt(localStorage.getItem('savedTime')) || 0;
             }
 
             // Function to save the current time to localStorage
             function saveCurrentTime() {
-                localStorage.setItem('savedTime', clock.getTime());
+                localStorage.setItem('savedTime', new Date().getTime());
             }
 
             var clock = $('.clock').FlipClock({
                 autoStart: false,
                 clockFace: 'DailyCounter',
-                countdown: false,
-                defaultInitTime: getSavedTime() // Set the initial time from localStorage
+                countdown: false
             });
+
+            var savedTime = getSavedTime();
+            var elapsedTimeInSeconds = Math.floor((new Date().getTime() - savedTime) / 1000);
+            clock.setTime(elapsedTimeInSeconds);
 
             // Function to reset the timer to 00:00:00:00
             function resetTimer() {
                 clock.stop();
-                clock.setTime(0);
+                clock.setTime(0)
                 saveCurrentTime(); // Save the current time after resetting
                 clock.start();
             }
@@ -91,8 +94,6 @@
                 clock.start();
             }
 
-            // Save the current time periodically (adjust the interval as needed)
-            setInterval(saveCurrentTime, 5000); // Save every 5 seconds
         });
     </script>
 </body>
