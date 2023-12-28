@@ -135,15 +135,15 @@
 
                 var savedTime = getSavedTime();
                 var elapsedTimeInSeconds = Math.floor((new Date().getTime() - savedTime) / 1000);
-                var recordTime = getRecordTime();
+                var currentRecordTime = getRecordTime();
 
                 // If elapsed time is larger than the current record time, update the record time
-                if (elapsedTimeInSeconds > recordTime) {
+                if (elapsedTimeInSeconds > currentRecordTime) {
                     recordTime = elapsedTimeInSeconds;
                     saveRecordTime(recordTime);
+                    topClock.setTime(recordTime); // Update top clock only when record time is updated
                 }
 
-                topClock.setTime(elapsedTimeInSeconds);
                 clock.setTime(0);
                 saveCurrentTime(); // Save the current time after resetting
                 clock.start();
