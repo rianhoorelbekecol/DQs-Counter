@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Countup Timer Using Flipclock.js</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="flipclock.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="flipclock.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .title {
+            font-family: 'Prompt', sans-serif;
+            font-size: 64px;
+            margin-bottom: 10px;
+            color: white; /* Add this line to set the text color to white */
+        }
+
+        .image-container {
+            text-align: center;
+        }
+
+        .image-container img {
+            width: 30%;
+            margin-top: 40px;
+        }
+
+        .clock-container {
+            position: relative;
+            margin-top: 60px; /* Adjust this value for more space */
+        }
+
+        #resetButton {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">
+        <p>DQ Live Counter</p>
+    </div>
+    <div class="image-container">
+        <img src="images/Vueling.png">
+    </div>
+    <div class="clock-container">
+        <div class="clock"></div>
+    </div>
+    <button id="resetButton">Reset Counter</button>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            // Function to get the saved time from localStorage
+            function getSavedTime() {
+                return localStorage.getItem('savedTime') || 0;
+            }
+
+            // Function to save the current time to localStorage
+            function saveCurrentTime() {
+                localStorage.setItem('savedTime', clock.getTime());
+            }
+
+            var clock = $('.clock').FlipClock({
+                autoStart: false,
+                clockFace: 'DailyCounter',
+                countdown: false,
+                defaultInitTime: getSavedTime() // Set the initial time from localStorage
+            });
+
+            // Function to reset the timer to 00:00:00:00
+            function resetTimer() {
+                clock.stop();
+                clock.setTime(0);
+                saveCurrentTime(); // Save the current time after resetting
+                clock.start();
+            }
+
+            // Bind the resetTimer function to the button click event
+            $('#resetButton').on('click', resetTimer);
+
+            // Manually start the clock if it's not already started
+            if (!clock.running) {
+                clock.start();
+            }
+
+            // Save the current time periodically (adjust the interval as needed)
+            setInterval(saveCurrentTime, 5000); // Save every 5 seconds
+        });
+    </script>
+</body>
+</html>
+
+
+
+
