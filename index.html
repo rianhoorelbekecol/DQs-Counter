@@ -24,6 +24,13 @@
             color: white; /* Add this line to set the text color to white */
         }
 
+        .sub-title {
+            font-family: 'Prompt', sans-serif;
+            font-size: 38px;
+            margin-bottom: 10px;
+            color: white; /* Add this line to set the text color to white */
+        }
+
         .image-container {
             text-align: center;
         }
@@ -38,15 +45,30 @@
             margin-top: 60px; /* Adjust this value for more space */
         }
 
-        #resetButton {
-            font-size: 18px;
-            margin-top: 20px;
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        #resetButton, #resetRecordButton {
+            width: 100%; /* Adjust the width as needed */
+            margin-right: 40px;
+            margin-left: 40px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 20px;
         }
     </style>
 </head>
 <body>
     <div class="title">
-        <p>DQ Live Counter</p>
+        <p>Customer - DQ Live Counter</p>
+    </div>
+    <div class="sub-title">
+        <p>Consecutive Record:</p>
+    </div>
+    <div class="top-clock-container">
+        <div class="top-clock"></div>
     </div>
     <div class="image-container">
         <img src="images/Vueling.png">
@@ -54,7 +76,10 @@
     <div class="clock-container">
         <div class="clock"></div>
     </div>
-    <button id="resetButton">Reset Counter</button>
+    <div class="button-container">
+        <button id="resetButton">Reset Counter</button>
+        <button id="resetRecordButton">Reset Record</button>
+    </div>
 
     <script type="text/javascript">
         $(document).ready(function(){
@@ -63,37 +88,82 @@
                 return parseInt(localStorage.getItem('savedTime')) || 0;
             }
 
+            // Function to get the saved record time from localStorage
+            function getRecordTime() {
+                return parseInt(localStorage.getItem('recordTime')) || 0;
+            }
+
             // Function to save the current time to localStorage
             function saveCurrentTime() {
                 localStorage.setItem('savedTime', new Date().getTime());
             }
 
-            var clock = $('.clock').FlipClock({
+            // Function to save the record time to localStorage
+            function saveRecordTime(recordTime) {
+                localStorage.setItem('recordTime', recordTime);
+            }
+
+            // Function to reset record time in localStorage
+            function resetRecordTime() {
+                localStorage.setItem('recordTime', 0);
+            }
+
+            // Initialize the top clock without autoStart
+            var topClock = $('.top-clock').FlipClock({
                 autoStart: false,
+                clockFace: 'DailyCounter',
+                countdown: false
+            });
+
+            var clock = $('.clock').FlipClock({
+                autoStart: true,
                 clockFace: 'DailyCounter',
                 countdown: false
             });
 
             var savedTime = getSavedTime();
             var elapsedTimeInSeconds = Math.floor((new Date().getTime() - savedTime) / 1000);
+            var recordTime = getRecordTime();
+
+            // Set the clock's time and top clock's time
             clock.setTime(elapsedTimeInSeconds);
+            topClock.setTime(recordTime);
 
             // Function to reset the timer to 00:00:00:00
             function resetTimer() {
                 clock.stop();
-                clock.setTime(0)
+
+                var savedTime = getSavedTime();
+                var elapsedTimeInSeconds = Math.floor((new Date().getTime() - savedTime) / 1000);
+                var recordTime = getRecordTime();
+
+                // If elapsed time is larger than the current record time, update the record time
+                if (elapsedTimeInSeconds > recordTime) {
+                    recordTime = elapsedTimeInSeconds;
+                    saveRecordTime(recordTime);
+                }
+
+                topClock.setTime(elapsedTimeInSeconds);
+                clock.setTime(0);
                 saveCurrentTime(); // Save the current time after resetting
                 clock.start();
+            }
+
+            function resetRecord(recordTime) {
+                topClock.setTime(0);
+                resetRecordTime();
             }
 
             // Bind the resetTimer function to the button click event
             $('#resetButton').on('click', resetTimer);
 
+            // Bind the resetTimer function to the button click event
+            $('#resetRecordButton').on('click', resetRecord);
+
             // Manually start the clock if it's not already started
             if (!clock.running) {
                 clock.start();
             }
-
         });
     </script>
 </body>
