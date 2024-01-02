@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Data Customer - DQ Live Counter</title>
-    <meta property="og:image" content="images/thumbnail.png">
+    <meta property="og:image" content="https://rianhoorelbekecol.github.io/Vueling-DQ-live-counter-customer/images/thumbnail.png">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="flipclock.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -46,18 +48,35 @@
             margin-top: 60px; /* Adjust this value for more space */
         }
 
-        .button-container {
+        .button-container-top {
             display: flex;
             justify-content: space-between;
             margin-top: 10px;
+            width: 20%;
         }
 
-        #resetButton, #resetRecordButton,  #startButton{
-            width: 100%; /* Adjust the width as needed */
+        .button-container-bottom {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            width: 40%;
+        }
+
+        #resetButton, #resetRecordButton, #startButton {
+            width: 100%;
             margin-right: 40px;
             margin-left: 40px;
             font-family: 'Prompt', sans-serif;
             font-size: 20px;
+            color: white;
+            border: 2px solid white;
+            background-color: transparent;
+            border-radius: 5px; /* Add curved corners */
+            transition: background-color 0.3s ease; /* Add transition effect */
+        }
+
+        #resetButton:hover, #resetRecordButton:hover, #startButton:hover {
+            background-color: rgba(255, 255, 255, 0.2); /* Light-up effect on hover */
         }
     </style>
 </head>
@@ -71,107 +90,144 @@
     <div class="top-clock-container">
         <div class="top-clock"></div>
     </div>
-    <div class="button-container">
+    <div class="button-container-top">
         <button id="resetRecordButton">Reset Record</button>
     </div>
     <div class="image-container">
-        <img src="images/vueling_logo.png">
+        <img src="images/vueling_logo_2.png">
     </div>
     <div class="clock-container">
         <div class="clock"></div>
     </div>
-    <div class="button-container">
+    <div class="button-container-bottom">
         <button id="startButton">Start Counter</button>
         <button id="resetButton">Reset Counter</button>
     </div>
 
-    <script type="text/javascript">
-        $(document).ready(function(){
-            // Function to get the saved time from localStorage
-            function getSavedTime() {
-                return parseInt(localStorage.getItem('savedTime')) || 0;
-            }
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiQiAIHsScW7I_EbtYqpqSt5y4y-CYkok",
+            authDomain: "dq-live-counter.firebaseapp.com",
+            databaseURL: "https://dq-live-counter.europe-west1.firebasedatabase.app",
+            projectId: "dq-live-counter",
+            storageBucket: "dq-live-counter.appspot.com",
+            messagingSenderId: "56026187946",
+            appId: "1:56026187946:web:8e9377a7bcb14fd90068d3",
+            measurementId: "G-YT190F5GP4"
+        };
 
-            // Function to get the saved record time from localStorage
-            function getRecordTime() {
-                return parseInt(localStorage.getItem('recordTime')) || 0;
-            }
+    
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-            // Function to save the current time to localStorage
-            function saveCurrentTime() {
-                localStorage.setItem('savedTime', new Date().getTime());
-            }
+    const connectedRef = firebase.database().ref('.info/connected');
 
-            // Function to save the record time to localStorage
-            function saveRecordTime(recordTime) {
-                localStorage.setItem('recordTime', recordTime);
-            }
-
-            // Function to reset record time in localStorage
-            function resetRecordTime() {
-                localStorage.setItem('recordTime', 0);
-            }
-
-            // Initialize the top clock without autoStart
-            var topClock = $('.top-clock').FlipClock({
-                autoStart: false,
-                clockFace: 'DailyCounter',
-                countdown: false
-            });
-
-            var clock = $('.clock').FlipClock({
-                autoStart: false,
-                clockFace: 'DailyCounter',
-                countdown: false
-            });
-
-            var savedTime = getSavedTime();
-            var elapsedTimeInSeconds = Math.floor((new Date().getTime() - savedTime) / 1000);
-            var recordTime = getRecordTime();
-
-            // Set the clock's time and top clock's time
-            clock.setTime(elapsedTimeInSeconds);
-            topClock.setTime(recordTime);
-
-            // Function to reset the timer to 00:00:00:00
-            function resetTimer() {
-                clock.stop();
-
-                var savedTime = getSavedTime();
-                var elapsedTimeInSeconds = Math.floor((new Date().getTime() - savedTime) / 1000);
-                var currentRecordTime = getRecordTime();
-
-                // If elapsed time is larger than the current record time, update the record time
-                if (elapsedTimeInSeconds > currentRecordTime) {
-                    recordTime = elapsedTimeInSeconds;
-                    saveRecordTime(recordTime);
-                    topClock.setTime(recordTime); // Update top clock only when record time is updated
+    connectedRef.on('value', function(snapshot) {
+        const isConnected = snapshot.val();
+        
+        if (isConnected) {
+            console.log('Connected to Firebase Realtime Database');
+            $(document).ready(function(){
+                function getSavedTime() {
+                    return database.ref('savedTime').once('value').then(snapshot => {
+                        return parseInt(snapshot.val(),10) || 0;
+                    });
                 }
 
-                clock.setTime(0);
-            }
+                function getRecordTime() {
+                    return database.ref('recordTime').once('value').then(snapshot => {
+                        return parseInt(snapshot.val(),10) || 0;
+                    });
+                }
 
-            function resetRecord() {
-                topClock.setTime(0);
-                resetRecordTime();
-            }
+                function saveCurrentTime() {
+                    const currentTime = new Date().getTime();
+                    database.ref('savedTime').set(currentTime);
+                }
 
-            function startTimer() {
-                saveCurrentTime();
-                clock.start();
-            }
+                function saveRecordTime(recordTime) {
+                    database.ref('recordTime').set(recordTime);
+                    database.ref('savedTime').set(0);
+                }
 
-            $('#startButton').on('click', startTimer);
+                function resetRecordTime() {
+                    database.ref('recordTime').set(0);
+                }
 
-            $('#resetButton').on('click', resetTimer);
+                function reset() {
+                    getSavedTime().then(savedTime => {
+                        getRecordTime().then(recordTime => {
+                            var elapsedTimeInSeconds = Math.floor((new Date().getTime() - savedTime) / 1000);
+                            if (elapsedTimeInSeconds > recordTime) {
+                                currentRecordTime = elapsedTimeInSeconds;
+                                saveRecordTime(currentRecordTime);
+                                topClock.setTime(currentRecordTime); 
+                            }
+                        });
+                    });
+                }
 
-            $('#resetRecordButton').on('click', resetRecord);
+                function startCounter() {
+                    getSavedTime().then(savedTime => {
+                        getRecordTime().then(recordTime => {
+                            var elapsedTimeInSeconds = 0;
 
+                            if (savedTime > 0) {
+                                elapsedTimeInSeconds = Math.floor((new Date().getTime() - savedTime) / 1000);
+                            }
 
-            if (!clock.running) {
-                clock.start();
-            }
-        });
+                            clock.setTime(elapsedTimeInSeconds);
+                            topClock.setTime(recordTime);
+
+                            if (!clock.running && savedTime != 0) {
+                                clock.start();
+                            }
+                        });
+                    });
+                }
+
+                startCounter();
+
+                var topClock = $('.top-clock').FlipClock({
+                    autoStart: false,
+                    clockFace: 'DailyCounter',
+                    countdown: false
+                });
+
+                var clock = $('.clock').FlipClock({
+                    autoStart: false,
+                    clockFace: 'DailyCounter',
+                    countdown: false
+                });
+                
+
+                function resetTimer() {
+                    clock.stop();
+                    reset();
+                    clock.setTime(0);
+                }
+
+                function resetRecord() {
+                    topClock.setTime(0);
+                    resetRecordTime();
+                }
+
+                function startTimer() {
+                    saveCurrentTime();
+                    clock.start();
+                }
+
+                $('#startButton').on('click', startTimer);
+
+                $('#resetButton').on('click', resetTimer);
+
+                $('#resetRecordButton').on('click', resetRecord);
+            });
+        }
+        else {
+            console.warn('Connection to Firebase Realtime Database not yet established');
+        }
+    });    
     </script>
 </body>
 </html>
