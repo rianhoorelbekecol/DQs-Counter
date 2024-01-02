@@ -51,7 +51,7 @@
             margin-top: 10px;
         }
 
-        #resetButton, #resetRecordButton {
+        #resetButton, #resetRecordButton,  #startButton{
             width: 100%; /* Adjust the width as needed */
             margin-right: 40px;
             margin-left: 40px;
@@ -70,15 +70,18 @@
     <div class="top-clock-container">
         <div class="top-clock"></div>
     </div>
+    <div class="button-container">
+        <button id="resetRecordButton">Reset Record</button>
+    </div>
     <div class="image-container">
-        <img src="images/Vueling.png">
+        <img src="images/vueling_logo.png">
     </div>
     <div class="clock-container">
         <div class="clock"></div>
     </div>
     <div class="button-container">
+        <button id="startButton">Start Counter</button>
         <button id="resetButton">Reset Counter</button>
-        <button id="resetRecordButton">Reset Record</button>
     </div>
 
     <script type="text/javascript">
@@ -116,7 +119,7 @@
             });
 
             var clock = $('.clock').FlipClock({
-                autoStart: true,
+                autoStart: false,
                 clockFace: 'DailyCounter',
                 countdown: false
             });
@@ -145,22 +148,25 @@
                 }
 
                 clock.setTime(0);
-                saveCurrentTime(); // Save the current time after resetting
-                clock.start();
             }
 
-            function resetRecord(recordTime) {
+            function resetRecord() {
                 topClock.setTime(0);
                 resetRecordTime();
             }
 
-            // Bind the resetTimer function to the button click event
+            function startTimer() {
+                saveCurrentTime();
+                clock.start();
+            }
+
+            $('#startButton').on('click', startTimer);
+
             $('#resetButton').on('click', resetTimer);
 
-            // Bind the resetTimer function to the button click event
             $('#resetRecordButton').on('click', resetRecord);
 
-            // Manually start the clock if it's not already started
+
             if (!clock.running) {
                 clock.start();
             }
