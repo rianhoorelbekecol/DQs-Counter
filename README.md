@@ -1,12 +1,4 @@
-# 3D-Digital-Flip-Countdown-Timer
-3D Digital Flip CountDown Timer Using Flipclock.js Library. </br>
-
-Just download the respository and unzip the file. </br>
-
-Open index.html file and here you go. </br>
-
-Enjoy the working Digital 3D Flip Coundtdown timer.</br>
-
-<h4>Follow me in github for more intresting project</h4>
+# Vueling - Data Customer - DQ Live Counter
+This repo contains a web page that shows a Live Counter of the amount of time that "Data Customer" has its DQs without warnings or KO's 
 
 ![](countdown-clock.gif)
