@@ -105,15 +105,16 @@
     </div>
 
     <script>
-          const firebaseConfig = {
-            apiKey: "AIzaSyCqhkJieM3Ui_6oCS-J1h2wTyQ3Q379YKA",
-            authDomain: "dq-live-counter-fb2e8.firebaseapp.com",
-            projectId: "dq-live-counter-fb2e8",
-            storageBucket: "dq-live-counter-fb2e8.appspot.com",
-            messagingSenderId: "874032054609",
-            appId: "1:874032054609:web:ebd4c6855a6567c0d99370",
-            measurementId: "G-0QGT83QK49"
-          };
+        const firebaseConfig = {
+          apiKey: "AIzaSyCqhkJieM3Ui_6oCS-J1h2wTyQ3Q379YKA",
+          authDomain: "dq-live-counter-fb2e8.firebaseapp.com",
+          databaseURL: "https://dq-live-counter-fb2e8-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "dq-live-counter-fb2e8",
+          storageBucket: "dq-live-counter-fb2e8.appspot.com",
+          messagingSenderId: "874032054609",
+          appId: "1:874032054609:web:ebd4c6855a6567c0d99370",
+          measurementId: "G-0QGT83QK49"
+        };
     
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
